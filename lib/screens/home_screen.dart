@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import 'atbash.dart';
@@ -217,9 +219,12 @@ class HomeScreen extends StatelessWidget {
                     backgroundColor: Colors.red,
                     padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                   ),
-                  onPressed: () {
+                  onPressed: () async {
                     Provider.of<myAuthProvider>(context, listen: false).logout();
                     Navigator.of(context).pushReplacementNamed('/');
+
+                    await GoogleSignIn().signOut();
+                    FirebaseAuth.instance.signOut();
                   },
                   child: Text('Logout', style: TextStyle(color: Colors.white)),
                 ),

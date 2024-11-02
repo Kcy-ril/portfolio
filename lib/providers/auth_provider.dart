@@ -26,5 +26,7 @@ class myAuthProvider with ChangeNotifier {
   void logout() {
     _currentUser = null;
     notifyListeners();
+
+
   }
 }
