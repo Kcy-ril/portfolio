@@ -1,13 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'home_screen.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatelessWidget {
-  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   LoginScreen({super.key});
@@ -31,8 +29,8 @@ class LoginScreen extends StatelessWidget {
               const Text('LOGIN', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
               const SizedBox(height: 20),
               TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Enter name:'),
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Enter email:'),
               ),
               TextField(
                 controller: _passwordController,
@@ -42,18 +40,21 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  final name = _nameController.text;
+                  final email = _emailController.text;
                   final password = _passwordController.text;
 
-                  if (await Provider.of<myAuthProvider>(context, listen: false)
-                      .login(name, password)) {
+                  try {
+                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (_) => HomeScreen()),
                     );
-                  } else {
+                  } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Invalid credentials')),
+                      SnackBar(content: Text('Login failed: ${e.toString()}')),
                     );
                   }
                 },
@@ -68,8 +69,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  signInWithGoogle();
-                  print('Google Sign-In button clicked');
+                  signInWithGoogle(context);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
@@ -100,20 +100,33 @@ class LoginScreen extends StatelessWidget {
     );
   }
 }
-signInWithGoogle() async {
 
-  GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+Future<void> signInWithGoogle(BuildContext context) async {
+  try {
+    GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+    if (googleUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Google Sign-In was cancelled')),
+      );
+      return;
+    }
 
-  AuthCredential credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken:  googleAuth?.idToken
-  );
+    GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-  UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+    AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth.accessToken,
+      idToken: googleAuth.idToken,
+    );
 
-
-
-
+    await FirebaseAuth.instance.signInWithCredential(credential);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => HomeScreen()),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Google Sign-In failed: ${e.toString()}')),
+    );
+  }
 }

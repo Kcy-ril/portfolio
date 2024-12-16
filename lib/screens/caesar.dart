@@ -30,22 +30,41 @@ class _CaesarPageState extends State<CaesarPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Caesar Cipher'),
+        centerTitle: true,
+        backgroundColor: Colors.indigo,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: _textController,
-              decoration: InputDecoration(labelText: 'Enter text'),
+              decoration: InputDecoration(
+                labelText: 'Enter text',
+                labelStyle: TextStyle(color: Colors.indigo),
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo),
+                ),
+              ),
             ),
+            SizedBox(height: 20),
             TextField(
               controller: _shiftController,
-              decoration: InputDecoration(labelText: 'Enter shift (number)'),
+              decoration: InputDecoration(
+                labelText: 'Enter shift (number)',
+                labelStyle: TextStyle(color: Colors.indigo),
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.indigo),
+                ),
+              ),
               keyboardType: TextInputType.number,
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: () {
@@ -54,9 +73,13 @@ class _CaesarPageState extends State<CaesarPage> {
                       _result = caesarEncrypt(_textController.text, shift);
                     });
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   child: Text('Encrypt'),
                 ),
-                SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
                     final shift = int.tryParse(_shiftController.text) ?? 0;
@@ -64,12 +87,32 @@ class _CaesarPageState extends State<CaesarPage> {
                       _result = caesarDecrypt(_textController.text, shift);
                     });
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.indigo,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   child: Text('Decrypt'),
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            Text('Result: $_result', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 30),
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.indigo.shade200),
+              ),
+              child: Text(
+                'Result: $_result',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.indigo.shade700,
+                ),
+              ),
+            ),
           ],
         ),
       ),

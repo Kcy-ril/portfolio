@@ -1,9 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
 
 class RegisterScreen extends StatelessWidget {
-  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -25,11 +24,15 @@ class RegisterScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Register', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              const Text(
+                'Register',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 20),
               TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name:'),
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'Email:'),
+                keyboardType: TextInputType.emailAddress,
               ),
               TextField(
                 controller: _passwordController,
@@ -44,17 +47,29 @@ class RegisterScreen extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  final name = _nameController.text;
+                  final email = _emailController.text;
                   final password = _passwordController.text;
                   final confirmPassword = _confirmPasswordController.text;
 
-                  if (password == confirmPassword &&
-                      await Provider.of<myAuthProvider>(context, listen: false)
-                          .register(name, password)) {
-                    Navigator.pop(context); // Redirect back to Login
-                  } else {
+                  if (password != confirmPassword) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Registration failed')),
+                      const SnackBar(content: Text('Passwords do not match')),
+                    );
+                    return;
+                  }
+
+                  try {
+                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                      email: email,
+                      password: password,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Registration successful!')),
+                    );
+                    Navigator.pop(context); // Redirect back to Login
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Registration failed: ${e.toString()}')),
                     );
                   }
                 },
@@ -64,7 +79,7 @@ class RegisterScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: Text('Register'),
+                child: const Text('Register'),
               ),
             ],
           ),

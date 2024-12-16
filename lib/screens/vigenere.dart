@@ -43,21 +43,40 @@ class _VigenerePageState extends State<VigenerePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Vigenere Cipher'),
+        centerTitle: true,
+        backgroundColor: Colors.teal,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
               controller: _textController,
-              decoration: InputDecoration(labelText: 'Enter text'),
+              decoration: InputDecoration(
+                labelText: 'Enter text',
+                labelStyle: TextStyle(color: Colors.teal),
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.teal),
+                ),
+              ),
             ),
+            SizedBox(height: 20),
             TextField(
               controller: _keyController,
-              decoration: InputDecoration(labelText: 'Enter key (word)'),
+              decoration: InputDecoration(
+                labelText: 'Enter key (word)',
+                labelStyle: TextStyle(color: Colors.teal),
+                border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.teal),
+                ),
+              ),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 20),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: () {
@@ -65,21 +84,45 @@ class _VigenerePageState extends State<VigenerePage> {
                       _result = vigenereEncrypt(_textController.text, _keyController.text);
                     });
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   child: Text('Encrypt'),
                 ),
-                SizedBox(width: 10),
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
                       _result = vigenereDecrypt(_textController.text, _keyController.text);
                     });
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                    textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                   child: Text('Decrypt'),
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            Text('Result: $_result', style: TextStyle(fontSize: 18)),
+            SizedBox(height: 30),
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.teal.shade50,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.teal.shade200),
+              ),
+              child: Text(
+                'Result: $_result',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white,
+                ),
+              ),
+            ),
           ],
         ),
       ),
